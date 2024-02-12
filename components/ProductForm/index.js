@@ -1,12 +1,26 @@
 import { StyledForm, StyledHeading, StyledLabel } from "./ProductForm.styled";
 import { StyledButton } from "../Button/Button.styled";
+import useSWR from "swr";
+// import { mutate } from "swr";
 
 export default function ProductForm() {
+  const { mutate } = useSWR("/api/products");
+
   async function handleSubmit(event) {
     event.preventDefault();
-
+    console.log("Click");
     const formData = new FormData(event.target);
     const productData = Object.fromEntries(formData);
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(productData),
+    });
+    if (response.ok) {
+      mutate();
+    }
   }
 
   return (
@@ -36,3 +50,34 @@ export default function ProductForm() {
     </StyledForm>
   );
 }
+
+/*
+import useSWR from "swr";
+
+export default function JokeForm() {
+  const { mutate } = useSWR("/api/jokes");
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const jokeData = Object.fromEntries(formData);
+
+    const response = await fetch("/api/jokes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jokeData),
+    });
+
+    if (response.ok) {
+      mutate();
+    }
+  }
+
+  return (
+		//...
+  );
+}
+*/
